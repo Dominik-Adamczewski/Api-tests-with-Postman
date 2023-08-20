@@ -1,0 +1,449 @@
+{
+	"info": {
+		"_postman_id": "fcd5133e-6d51-4c03-af63-6712186f2d56",
+		"name": "Restful booker tests",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "API Health check",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "532a1773-058d-4cf7-bbd4-b9dabc9cc751",
+						"exec": [
+							"pm.test('Status should be 201', () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"// don't make any requests if the API is not working properly\r",
+							"// if (pm.response.status !== 201) {\r",
+							"//     postman.setNextRequest(\"\");\r",
+							"// }"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "aa066703-5089-45a1-91be-fa961ac045fd",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{baseUrl}}/ping"
+			},
+			"response": []
+		},
+		{
+			"name": "Get auth token",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "ee17ac6f-13f4-4929-8cd5-617892fc61bf",
+						"exec": [
+							"const responseVar = pm.response.json();\r",
+							"\r",
+							"pm.test('Status is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response is not empty', () => {\r",
+							"    pm.expect(responseVar.length).not.eq(0);\r",
+							"    pm.expect(responseVar).not.to.be.empty;\r",
+							"});\r",
+							"\r",
+							"pm.globals.set(\"token\", responseVar.token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "62d5167d-46ac-4297-af77-8ad5ba828c0b",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"username\": \"admin\",\r\n    \"password\": \"password123\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/auth"
+			},
+			"response": []
+		},
+		{
+			"name": "Get all booking ids",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "b0004b68-cba5-43a9-9366-12c1f5f8e952",
+						"exec": [
+							"const responseVar = pm.response.json();\r",
+							"\r",
+							"pm.test('Response status is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Make sure that response is not empty', () => {\r",
+							"    pm.expect(responseVar.length).not.to.eq(0);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "dac65802-a7a8-4a28-9687-7a691dc24128",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "{{baseUrl}}/booking"
+			},
+			"response": []
+		},
+		{
+			"name": "Submit a booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "6cbf5b07-9cef-4c0c-b522-4124f999dd3c",
+						"exec": [
+							"const responseVar = pm.response.json();\r",
+							"\r",
+							"pm.test('Status is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response is not empty', () => {\r",
+							"    pm.expect(responseVar.length).not.eq(0);\r",
+							"    pm.expect(responseVar).not.to.be.empty;\r",
+							"});\r",
+							"\r",
+							"// Set randomly taken booking id as global variable to use in other requests.\r",
+							"pm.globals.set(\"bookingId\", responseVar.bookingid);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "a7cf193a-257c-4418-bc5b-e4038c494c1c",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"{{$randomFirstName}}\",\r\n    \"lastname\": \"{{$randomLastName}}\",\r\n    \"totalprice\": {{$randomInt}},\r\n    \"depositpaid\": {{$randomBoolean}},\r\n    \"bookingdates\": {\r\n        \"checkin\": \"2056-12-01\",\r\n        \"checkout\": \"2057-01-03\"\r\n    },\r\n    \"additionalneeds\": \"{{$randomWord}}\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": "{{baseUrl}}/booking"
+			},
+			"response": []
+		},
+		{
+			"name": "Get booking with particular id",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "124bf3e3-ccb8-48cc-8a75-893ab3dfb394",
+						"exec": [
+							"const responseVar = pm.response.json();\r",
+							"\r",
+							"pm.test('Status code is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response is not empty', () => {\r",
+							"    pm.expect(responseVar) !== null && pm.expect(responseVar) !== undefined && pm.expect(responseVar) !== 0 && pm.expect(responseVar) !== \"\"\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "7fc52358-ad67-455c-9371-22a77f6c8a0a",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{baseUrl}}/booking/:bookingId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						":bookingId"
+					],
+					"variable": [
+						{
+							"key": "bookingId",
+							"value": "{{bookingId}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update existing booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5396c0ec-6ae0-411b-871b-ce1c8fbb55cd",
+						"exec": [
+							"const responseVar = pm.response.json();\r",
+							"\r",
+							"pm.test('Status is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response is not empty', () => {\r",
+							"    pm.expect(responseVar.length).not.eq(0);\r",
+							"    pm.expect(responseVar).not.to.be.empty;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "fdae5df0-3411-4053-860e-df93ddc46007",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{authorizationToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\" : \"James\",\r\n    \"lastname\" : \"Brown\",\r\n    \"totalprice\" : 111,\r\n    \"depositpaid\" : true,\r\n    \"bookingdates\" : {\r\n        \"checkin\" : \"2018-01-01\",\r\n        \"checkout\" : \"2019-01-01\"\r\n    },\r\n    \"additionalneeds\" : \"Breakfast\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking/:bookingId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						":bookingId"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "bookingId",
+							"value": "{{bookingId}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Partial update to an existing booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "5396c0ec-6ae0-411b-871b-ce1c8fbb55cd",
+						"exec": [
+							"const responseVar = pm.response.json();\r",
+							"\r",
+							"pm.test('Status is 200', () => {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test('Response is not empty', () => {\r",
+							"    pm.expect(responseVar.length).not.eq(0);\r",
+							"    pm.expect(responseVar).not.to.be.empty;\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "78904a83-f70f-4d92-acc8-53513c97f108",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "PATCH",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{authorizationToken}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"firstname\": \"Tester\"\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseUrl}}/booking/:bookingId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						":bookingId"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					],
+					"variable": [
+						{
+							"key": "bookingId",
+							"value": "{{bookingId}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Remove existing booking",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "4188e176-79a3-4259-8378-a5cbe8838b52",
+						"exec": [
+							"pm.test('Status should be 201', () => {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"_postman_id": "4f3f2168-a206-499a-95dd-d13e6a97d115",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Authorization",
+						"value": "{{authorizationToken}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseUrl}}/booking/:bookingId",
+					"host": [
+						"{{baseUrl}}"
+					],
+					"path": [
+						"booking",
+						":bookingId"
+					],
+					"variable": [
+						{
+							"key": "bookingId",
+							"value": "{{bookingId}}",
+							"type": "string"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "30631e88-d79e-4b49-a0cb-d4e09734b921",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "f6905fc1-7cd4-4059-b85f-840effcf6395",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "2bebcd07-17be-42ac-9b0d-e5e6cd660516",
+			"key": "baseUrl",
+			"value": "https://restful-booker.herokuapp.com",
+			"type": "string"
+		},
+		{
+			"id": "d331b717-8d5a-48df-89e3-ed9f4817d0c9",
+			"key": "authorizationToken",
+			"value": "Basic YWRtaW46cGFzc3dvcmQxMjM=",
+			"type": "string"
+		}
+	]
+}
